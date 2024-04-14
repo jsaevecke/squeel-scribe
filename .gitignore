@@ -7,6 +7,9 @@
 *.dll
 *.so
 *.dylib
+*.sql
+*.txt
+*.csv
 
 # Test binary, built with ?   	github.com/jsaevecke/toolbox	[no test files]
 *.test
