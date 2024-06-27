@@ -39,12 +39,20 @@ fi
 
 echo "Imported file $(gum style --foreground 212 "$IMPORTFILE") into database $(gum style --foreground 212 "$DATABASE") successfully."
 
-#EXPORTHEADERS=$(gum confirm "Do you want to export table headers?")
 
 gum confirm "Do you want to export the tables now? (This will export all tables in the database $(gum style --foreground 212 "$DATABASE") to the output directory $(gum style --foreground 212 "./$DATABASE")"
 if [ $? -ne 0 ]; then
     exit 0
 fi
+
+EXPORTHEADERS=""
+gum confirm "Do you want to export table headers?"
+
+if [ $? -eq 0 ]; then
+    EXPORTHEADERS="header,"
+fi
+
+echo $EXPORTHEADERS
 
 echo
 echo "Exporting tables from $(gum style --foreground 212 "$DATABASE") to directory $(gum style --foreground 212 "./$DATABASE")"
@@ -58,7 +66,7 @@ for TABLENAME in $TABLENAMES; do
 
     mkdir $DATABASE > /dev/null 2>&1
 
-    gum spin --title "Exporting table $(gum style --foreground 212 "$TABLENAME") to $(gum style --foreground 212 "./$DATABASE/$OUTPUTFILE")..." -- psql -U $USERNAME -d $DATABASE -h $HOST -c "\copy $TABLENAME TO './$DATABASE/$OUTPUTFILE' WITH (FORMAT 'csv', DELIMITER '|', ESCAPE '\"', QUOTE '\"', NULL 'NULL')" > /dev/null
+    gum spin --title "Exporting table $(gum style --foreground 212 "$TABLENAME") to $(gum style --foreground 212 "./$DATABASE/$OUTPUTFILE")..." -- psql -U $USERNAME -d $DATABASE -h $HOST -c "\copy $TABLENAME TO './$DATABASE/$OUTPUTFILE' WITH (FORMAT 'csv', $EXPORTHEADERS DELIMITER '|', ESCAPE '\"', QUOTE '\"', NULL 'NULL')" > /dev/null
 
     echo "Exported table $(gum style --foreground 212 "$TABLENAME") to $(gum style --foreground 212 "./$DATABASE/$OUTPUTFILE")..." 
 done
